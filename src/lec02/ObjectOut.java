@@ -13,6 +13,7 @@ public class ObjectOut
         {
             // Account のインスタンス myAccount 作成
             Account myAccount = new Account(args[0], args[1], args[2], Integer.parseInt(args[3]));
+            // Account myAccount2 = new Account();
             FileOutputStream fos = new FileOutputStream(args[6]);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 
