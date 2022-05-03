@@ -31,6 +31,7 @@ public class ObjectOut
                 //預金残額を毎年追加していくため、年数を1年増やす
                 years++;
             }
+            System.out.println("years: " + years);
             // 変数 total_balance に預金残額を代入
             total_balance = myAccount.getBalance();
 
