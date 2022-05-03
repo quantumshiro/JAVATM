@@ -5,7 +5,8 @@ public class FileCopy
     public static void main(String[] args)
     {
         // 入力バッファを定義
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        // BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        byte[] buf = new byte[10000000];
         // ファイルサイズを格納する変数を定義
         int fileSize = 0;
         // 1回で入力したバイト数を格納する変数を定義
@@ -19,12 +20,15 @@ public class FileCopy
             FileOutputStream fos = new FileOutputStream(args[1]);
 
             // ファイルから入力し、戻り値が-1 でない場合に繰り返す
-            while ((readSize = fis.read()) != -1)
+            while ((readSize = fis.read(buf)) != -1)
             {
                 // 入力したデータを出力ファイルに書き込む
-                fos.write(readSize);
+                // fos.write(readSize);
+                // fos.write(buf, fileSize, readSize);
+                fos.write(buf, 0, readSize);
                 // ファイルサイズをカウントアップ
-                fileSize++;
+                // fileSize++;
+                fileSize += readSize;
             }
 
             // 入力ファイル名, 出力ファイル名, ファイルサイズを画面に出力
@@ -35,6 +39,7 @@ public class FileCopy
             // 入力ファイル, 出力ファイルをクローズ
             fis.close();
             fos.close();
+            // in.close();
         }
         catch(Exception ex)
         {
