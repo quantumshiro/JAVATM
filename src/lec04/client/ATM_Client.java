@@ -143,8 +143,8 @@ public class ATM_Client {
 
                         System.out.println("残高は以下の通りです");
                         len = in.read(getbuf);
-                        String n = new String(getbuf, 0, len);
-                        System.out.println(n + "円");
+                        String yen = new String(getbuf, 0, len);
+                        System.out.println(yen + "円");
 
                     }
                     else if (select == 1) {
@@ -158,15 +158,15 @@ public class ATM_Client {
 
                         System.out.println("残高は以下の通りです");
                         len = in.read(getbuf);
-                        String n = new String(getbuf, 0, len);
-                        System.out.println(n + "円");
+                        String yen = new String(getbuf, 0, len);
+                        System.out.println(yen + "円");
 
                     }
                     else if (select == 2) {
                         System.out.println("残高は以下の通りです");
                         len = in.read(getbuf);
-                        String n = new String(getbuf, 0, len);
-                        System.out.println(n + "円");
+                        String yen = new String(getbuf, 0, len);
+                        System.out.println(yen + "円");
 
                     }
                     else if (select == 3) {
