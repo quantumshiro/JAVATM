@@ -8,7 +8,7 @@ public class ATM_Client {
             String IP = "127.0.0.1";
             byte[] getbuf = new byte[1024];
             byte[] sendbuf = new byte[1024];
-            int len=0;
+            int len = 0;
 
             String Success = "Success";
 
@@ -19,7 +19,7 @@ public class ATM_Client {
             InputStream in = socket.getInputStream();
 
             while (true) {
-                System.out.println("ATMサーバに接続");
+                System.out.println("server is waiting...");
                 System.out.print("操作番号を入力してください(0: 口座新規作成, 1: 既存口座) : ");
                 InputStreamReader is = new InputStreamReader(System.in);
                 BufferedReader br = new BufferedReader(is);
@@ -36,7 +36,7 @@ public class ATM_Client {
                 if (check.equals(Success)) {
 
                 } else {
-                    System.out.println("応答が不正です");
+                    System.out.println("reaction error");
                     break;
                 }
 
@@ -78,11 +78,10 @@ public class ATM_Client {
                     System.out.println("口座番号は" + accountNumber + "です。");
 
                     break;
-
                 } else if (select == 1) {
-                    System.out.println("認証方式を選択してください。(0: パスワード認証, 1: CHAP認証): ");
-
-                    select = Integer.parseInt(br.readLine());
+                    // System.out.println("認証方式を選択してください。(0: パスワード認証, 1: CHAP認証): ");
+                    // select = Integer.parseInt(br.readLine());
+                    
                     System.out.println("お名前を入力してください");
                     String name = br.readLine();
                     sendbuf = name.getBytes();
@@ -90,8 +89,8 @@ public class ATM_Client {
                     out.write(sendbuf, 0, len);
 
                     System.out.println("口座番号を入力して下さい");
-                    String num = br.readLine();
-                    sendbuf = num.getBytes();
+                    String accountNumber = br.readLine();
+                    sendbuf = accountNumber.getBytes();
                     len = sendbuf.length;
                     out.write(sendbuf, 0, len);
 
@@ -100,37 +99,41 @@ public class ATM_Client {
                     len = sendbuf.length;
                     out.write(sendbuf, 0, len);
 
-                    if (select == 0) {
-                        System.out.print("パスワードを入力してください: ");
-                        String pass = br.readLine();
+                    System.out.print("パスワードを入力してください: ");
+                    String pass = br.readLine();
 
-                        System.out.println("パスワードを送信");
-                        sendbuf = pass.getBytes();
-                        len = sendbuf.length;
-                        out.write(sendbuf, 0, len);
-                        len = in.read(getbuf);
-                        check = new String(getbuf, 0, len);
+                    System.out.println("パスワードを送信");
+                    sendbuf = pass.getBytes();
+                    len = sendbuf.length;
+                    out.write(sendbuf, 0, len);
 
+                    System.out.println("start authentication");
+                    len = in.read(getbuf);
+                    check = new String(getbuf, 0, len);
 
-                        if (check.equals(Success)) {
-                            System.out.println("パスワードが一致しました。");
-                        } else {
-                            System.out.println("パスワードが一致しません。");
-                            break;
-                        }
-                    }
-
-                    else if (select == 1) {
-                    }
-
-                    else {
-                        System.out.println("操作番号が不正です。\n");
+                    if (check.equals(Success)) {
+                        System.out.println("認証成功");
+                    } else {
+                        System.out.println("認証失敗");
                         break;
                     }
+                } else {
+                    System.out.println("selection error");
+                    break;
+                }
 
-                    while (true) {
-                        System.out.println("口座への操作を入力してください。（0: 預金, 1: 引き出し, 2: 残高確認, 3: 操作の終了 4: 顧客データの削除）: ");
+                while (true) {
+                    System.out.println("口座への操作を入力してください。（0: 預金, 1: 引き出し, 2: 残高確認, 3: 操作の終了 4: 顧客データの削除）: ");
 
+                    select = Integer.parseInt(br.readLine());
+
+                    selectNumber = Integer.toString(select);
+                    sendbuf = selectNumber.getBytes();
+                    len = sendbuf.length;
+                    out.write(sendbuf, 0, len);
+
+                    if (select == 0) {
+                        System.out.println("入金額を入力して下さい");
                         select = Integer.parseInt(br.readLine());
 
                         selectNumber = Integer.toString(select);
@@ -138,72 +141,55 @@ public class ATM_Client {
                         len = sendbuf.length;
                         out.write(sendbuf, 0, len);
 
-                        if (select == 0) {
-                            System.out.println("入金額を入力して下さい");
-                            select = Integer.parseInt(br.readLine());
+                        System.out.println("残高は以下の通りです");
+                        len = in.read(getbuf);
+                        String n = new String(getbuf, 0, len);
+                        System.out.println(n + "円");
 
-                            selectNumber = Integer.toString(select);
-                            sendbuf = selectNumber.getBytes();
-                            len = sendbuf.length;
-                            out.write(sendbuf, 0, len);
-
-                            System.out.println("残高は以下の通りです");
-                            len = in.read(getbuf);
-                            String n = new String(getbuf, 0, len);
-                            System.out.println(n + "円");
-
-                        }
-
-                        else if (select == 1) {
-                            System.out.println("引き出したい額を入力して下さい、残高より多い金額は残高分のみ引き出されます");
-                            select = Integer.parseInt(br.readLine());
-
-                            selectNumber = Integer.toString(select);
-                            sendbuf = selectNumber.getBytes();
-                            len = sendbuf.length;
-                            out.write(sendbuf, 0, len);
-
-                            System.out.println("残高は以下の通りです");
-                            len = in.read(getbuf);
-                            String n = new String(getbuf, 0, len);
-                            System.out.println(n + "円");
-
-                        }
-
-                        else if (select == 2) {
-                            System.out.println("残高は以下の通りです");
-                            len = in.read(getbuf);
-                            String n = new String(getbuf, 0, len);
-                            System.out.println(n + "円");
-
-                        }
-
-                        else if (select == 3) {
-                            System.out.println("操作を終了します");
-                            break;
-                        }
-
-                        else if (select == 4) {
-                            System.out.println("ご愛顧いただきありがとうございました。");
-                            break;
-                        }
-
-                        else {
-                            System.out.println("不正な番号が入力されました");
-                        }
                     }
+                    else if (select == 1) {
+                        System.out.println("引き出したい額を入力して下さい、残高より多い金額は残高分のみ引き出されます");
+                        select = Integer.parseInt(br.readLine());
 
-                    if (select == 3||select == 4) {
+                        selectNumber = Integer.toString(select);
+                        sendbuf = selectNumber.getBytes();
+                        len = sendbuf.length;
+                        out.write(sendbuf, 0, len);
+
+                        System.out.println("残高は以下の通りです");
+                        len = in.read(getbuf);
+                        String n = new String(getbuf, 0, len);
+                        System.out.println(n + "円");
+
+                    }
+                    else if (select == 2) {
+                        System.out.println("残高は以下の通りです");
+                        len = in.read(getbuf);
+                        String n = new String(getbuf, 0, len);
+                        System.out.println(n + "円");
+
+                    }
+                    else if (select == 3) {
+                        System.out.println("操作を終了します");
                         break;
+                    }
+                    else if (select == 4) {
+                        System.out.println("ご愛顧いただきありがとうございました。");
+                        break;
+                    }
+                    else {
+                        System.out.println("Number error");
                     }
                 }
 
+                if (select == 3||select == 4) {
+                    break;
+                }
             }
             System.out.println("ご利用ありがとうございました。\n");
             in.close();
             out.close();
             socket.close();
-
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {

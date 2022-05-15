@@ -92,37 +92,29 @@ public class ATM_Server {
                     FileInputStream inFile = new FileInputStream(name + "_" + accountNumber + ".obj"); // 格納されているファイル名を特定
                     ObjectInputStream objectln = new ObjectInputStream(inFile);
                     PassAccount inAccount = (PassAccount) objectln.readObject();
-
                     objectln.close();
 
-                    System.out.println("認証方式の選択");
+                    // System.out.println("認証方式の選択");
                     len = in.read(getbuf);
 
-                    select = new String(getbuf, 0, len);
+                    // select = new String(getbuf, 0, len);
 
-                    if (select.equals("0")) {
-                        System.out.println("パスワード認証を行います");
+                    System.out.println("パスワード認証を行います");
 
-                        System.out.println("パスワードをチェックします");
-                        len = in.read(getbuf);
-                        String pass = new String(getbuf, 0, len);
-                        if (inAccount.IsPasswordCorrect(inAccount.password(), pass)) {
-                            System.out.println("パスワードが一致しました");
-                            sendbuf = Success.getBytes();
-                            len = sendbuf.length;
-                            out.write(sendbuf, 0, len);
-
-                        } else {
-                            System.out.println("パスワードが一致しませんでした");
-                            sendbuf = Fail.getBytes();
-                            len = sendbuf.length;
-                            out.write(sendbuf, 0, len);
-                            break;
-                        }
-
-                    }
-                    else if (select.equals("1")) {
-                        continue;
+                    System.out.println("パスワードをチェックします");
+                    len = in.read(getbuf);
+                    String password = new String(getbuf, 0, len);
+                    if (inAccount.IsPasswordCorrect(inAccount.password(), password)) {
+                        System.out.println("パスワードが一致しました");
+                        sendbuf = Success.getBytes();
+                        len = sendbuf.length;
+                        out.write(sendbuf, 0, len);
+                    } else {
+                        System.out.println("パスワードが一致しませんでした");
+                        sendbuf = Fail.getBytes();
+                        len = sendbuf.length;
+                        out.write(sendbuf, 0, len);
+                        break;
                     }
 
                     while (true) {
@@ -191,8 +183,7 @@ public class ATM_Server {
 
                     }
 
-                }
-                else {
+                } else {
                     System.out.println("失敗");
                     break;
                 }
