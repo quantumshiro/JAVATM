@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.*;
+import java.security.MessageDigest;
+import java.util.Random;
 
 public class ATM_Server {
     public static void main(String[] args) {
@@ -94,27 +96,67 @@ public class ATM_Server {
                     PassAccount inAccount = (PassAccount) objectln.readObject();
                     objectln.close();
 
-                    // System.out.println("認証方式の選択");
+                    System.out.println("認証方式の選択");
                     len = in.read(getbuf);
 
-                    // select = new String(getbuf, 0, len);
+                    select = new String(getbuf, 0, len);
 
-                    System.out.println("パスワード認証を行います");
+                    if (select.equals("0")) {
+                        System.out.println("パスワード認証を行います");
 
-                    System.out.println("パスワードをチェックします");
-                    len = in.read(getbuf);
-                    String password = new String(getbuf, 0, len);
-                    if (inAccount.IsPasswordCorrect(inAccount.password(), password)) {
-                        System.out.println("パスワードが一致しました");
-                        sendbuf = Success.getBytes();
+                        System.out.println("パスワードをチェックします");
+                        len = in.read(getbuf);
+                        String password = new String(getbuf, 0, len);
+                        if (inAccount.IsPasswordCorrect(inAccount.password(), password)) {
+                            System.out.println("パスワードが一致しました");
+                            sendbuf = Success.getBytes();
+                            len = sendbuf.length;
+                            out.write(sendbuf, 0, len);
+                        } else {
+                            System.out.println("パスワードが一致しませんでした");
+                            sendbuf = Fail.getBytes();
+                            len = sendbuf.length;
+                            out.write(sendbuf, 0, len);
+                            break;
+                        }
+                    } else if (select.equals("1")) {
+                        System.out.println("start chap authentication");
+                        Random random = new Random();
+                        String challenge = Integer.toString(random.nextInt(10000000));
+
+                        System.out.println("send random number");
+                        sendbuf = challenge.getBytes();
                         len = sendbuf.length;
                         out.write(sendbuf, 0, len);
-                    } else {
-                        System.out.println("パスワードが一致しませんでした");
-                        sendbuf = Fail.getBytes();
-                        len = sendbuf.length;
-                        out.write(sendbuf, 0, len);
-                        break;
+
+                        System.out.println("create message digest");
+                        String password = inAccount.password() + challenge;
+                        MessageDigest md = MessageDigest.getInstance("SHA-256");
+                        md.update(password.getBytes());
+                        byte[] digest = md.digest();
+                        String internalmd = new String(digest, 0, digest.length);
+                        System.out.println("internal message digest");
+                        System.out.println(internalmd);
+
+                        System.out.println("get response");
+                        len = in.read(getbuf);
+                        String response = new String(getbuf, 0, len);
+
+                        System.out.println("check response");
+                        if (internalmd.equals(response)) {
+                            System.out.println("response is correct");
+                            sendbuf = Success.getBytes();
+                            len = sendbuf.length;
+                            out.write(sendbuf, 0, len);
+                            System.out.println("authentication success");
+                        } else {
+                            System.out.println("response is incorrect");
+                            sendbuf = Fail.getBytes();
+                            len = sendbuf.length;
+                            out.write(sendbuf, 0, len);
+                            System.out.println("authentication failure");
+                            break;
+                        }
                     }
 
                     while (true) {
@@ -184,7 +226,7 @@ public class ATM_Server {
                     }
 
                 } else {
-                    System.out.println("Fail");
+                    System.out.println("失敗");
                     break;
                 }
                 if (select.equals("3")|| select.equals("4")) {
@@ -192,7 +234,7 @@ public class ATM_Server {
                 }
             }
 
-            System.out.println("finish");
+            System.out.println("取引終了");
             sendbuf = Success.getBytes();
             len = sendbuf.length;
             out.write(sendbuf, 0, len);

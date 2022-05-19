@@ -1,3 +1,5 @@
+package receive;
+
 import java.io.*;
 import java.net.*;
 
@@ -29,7 +31,7 @@ public class FileRcv
                 len = sbuf.length;
                 out.write(sbuf, 0, len);
 
-                FileOutputStream fout = new FileOutputStream("output.txt");
+                FileOutputStream fout = new FileOutputStream(buf);
                 while ((len = in.read(rbuf)) != -1)
                 {
                     fout.write(rbuf, 0, len);
