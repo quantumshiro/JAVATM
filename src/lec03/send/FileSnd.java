@@ -1,5 +1,3 @@
-package send;
-
 import java.io.*;
 import java.net.*;
 
